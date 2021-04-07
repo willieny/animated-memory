@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="raw" style="width:610px;height:400px;">
+        <div id="Total" class="float-left" style="width:610px;height:400px;"></div>
+
+        <a class="btn btn-primary float-right text-white" id="exportReportButton" ><small>Exportar para csv</small></a>
+    </div>   
+    <script>
+
+
+        var plot = function(url_csv, id_div, title) {
+
+            Plotly.d3.csv(url_csv, function(data) {
+            var x = [], y1 = [], y2 = [];
+
+            for (var i=0; i<data.length; i++) {
+                row = data[i];
+                x.push( row['Ano'] );
+                y1.push( row['Total'] );
+                y2.push( row['Equivalente'] );
+            }
+
+            var traces = [{
+                x: x,
+                y: y1,
+                type: 'bar',
+                marker: {color: 'blue'},
+                name: 'Total'
+            },{
+                x: x,
+                y: y2,
+                type: 'bar',
+                marker: {color: 'green'},
+                name: 'Equivalente'
+            }
+            
+            ];
+
+            var layout = {
+                title: title,
+                showlegend: true,
+                yaxis: {
+                    fixedrange: true,
+                    tickformat : '.d',
+                    tickmode : 'array'
+                },
+                xaxis : {
+                    fixedrange: true,
+                    type: 'category'
+                }
+            };
+
+            Plotly.newPlot(id_div, traces, layout, {displayModeBar: false})
+        });
+
+        }
+
+
+        plot('https://raw.githubusercontent.com/willieny/animated-memory/main/passageiros.csv', 'Total', 'Passageiros por ano');
+        
+
+
+        
+        
+        $(document).ready(function () {
+
+//When the export report button is clicked, download what is shown in the report as 
+//a CSV file.  The lastValue tracking helps ensures that no row is recorded more than once.
+$('#exportReportButton').on('click', function() { 
+    var theReport = 'Ano,Total,Equivalente\n2008,98975878,84184948\n2009,96231912,82440953\n2010,99941489,86938347\n2011,95625648,82822695\n2012,91217151,79686176\n2013,90723508,80668760\n2014,94659784,83828651\n2015,94926783,83137587\n2016,89057825,77220340\n2017,81795437,69011262\n2018,79110437,66299121\n2019,74877512,62096033'
+  var element = document.createElement('a');
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(theReport));
+  element.setAttribute('download', 'total de passageiros.csv');
+  element.style.display = 'none';
+  if (typeof element.download != "undefined") {
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+  else {
+    alert('This functionality is not supported by the current browser, recommend trying with Google Chrome instead.  (http://caniuse.com/#feat=download)');
+  }
+});
+
+});
+
+        
+    </script>
+
+
+
+
+</body>
+</html>
